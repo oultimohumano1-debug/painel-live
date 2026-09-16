@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel PRO de Transmissão - Área Exclusiva</title>
+    <style>
+        :root {
+            --bg-color: #0b0d17;
+            --card-bg: #151828;
+            --accent-cyan: #00f2fe;
+            --accent-green: #00ff87;
+            --accent-red: #ff2a6d;
+            --accent-yellow: #ffe600;
+            --text-color: #ffffff;
+            --text-muted: #8a8fbf;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* LETREIRO DIGITAL (MARQUEE NEON - VELOCIDADE ULTRA SUAVE) */
+        .ticker-wrap {
+            width: 100%;
+            overflow: hidden;
+            background: linear-gradient(90deg, #111322, #1d2138, #111322);
+            border: 2px solid var(--accent-yellow);
+            border-radius: 12px;
+            padding: 14px 0;
+            box-shadow: 0 0 15px rgba(255, 230, 0, 0.25);
+            display: flex;
+            align-items: center;
+        }
+
+        .ticker-text {
+            display: inline-block;
+            white-space: nowrap;
+            padding-left: 100%;
+            animation: marquee 88s linear infinite; /* Velocidade reduzida pela metade (88s) */
+            font-size: 1.1rem;
+            color: #ffffff;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .ticker-text strong {
+            color: var(--accent-yellow);
+            text-shadow: 0 0 8px rgba(255, 230, 0, 0.6);
+        }
+
+        .ticker-text span.highlight {
+            color: var(--accent-cyan);
+            font-weight: bold;
+        }
+
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-100%); }
+        }
+
+        /* PAUSAR AO PASSAR O MOUSE */
+        .ticker-wrap:hover .ticker-text {
+            animation-play-state: paused;
+        }
+
+        header {
+            background: linear-gradient(135deg, #1e2238, #111322);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(0, 242, 254, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .title-container h1 { font-size: 1.6rem; color: var(--accent-cyan); }
+        .title-container p { color: var(--text-muted); font-size: 0.9rem; margin-top: 4px; }
+
+        /* PAINEL DE CONTROLE MASTER */
+        .master-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            background: #121422;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #282d4a;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        .control-group { display: flex; align-items: center; gap: 10px; }
+        label { font-size: 0.85rem; color: var(--text-muted); font-weight: bold; }
+        
+        input[type="number"] {
+            background: #1c2035; color: #fff; border: 1px solid #383e66;
+            padding: 8px; border-radius: 6px; width: 80px; outline: none; font-weight: bold;
+        }
+
+        .btn {
+            padding: 10px 18px; border: none; border-radius: 6px; font-weight: bold;
+            cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; gap: 8px;
+        }
+
+        .btn-panic { background: var(--accent-red); color: white; font-size: 1.1rem;}
+        .btn-panic:hover { background: #d61c56; transform: scale(1.02); }
+
+        .btn-auto { background: #282d4a; color: white; border: 1px solid var(--accent-cyan); }
+        .btn-auto.active { background: var(--accent-cyan); color: #000; box-shadow: 0 0 12px rgba(0, 242, 254, 0.6); }
+
+        /* EFEITOS SONOROS (20 BOTOES) */
+        .sfx-container {
+            background: var(--card-bg); padding: 15px; border-radius: 10px; border: 1px solid #262c45;
+        }
+        .sfx-container h3 { color: var(--accent-yellow); margin-bottom: 15px; font-size: 1rem; }
+        .sfx-bar {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px;
+        }
+        .btn-sfx {
+            background: #1f243d; border: 1px solid #3d4675; color: var(--accent-yellow);
+            padding: 10px; border-radius: 8px; cursor: pointer; font-size: 0.8rem; font-weight: bold;
+        }
+        .btn-sfx:hover { background: #2d3459; border-color: var(--accent-yellow); }
+
+        /* GRID DE ÁUDIOS */
+        .categories-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 20px; }
+        .category-card { background: var(--card-bg); border-radius: 10px; padding: 15px; border: 1px solid #262c45; }
+        .category-card h3 { font-size: 1rem; color: var(--accent-cyan); margin-bottom: 12px; padding-bottom: 6px; border-bottom: 1px solid #262c45; }
+        
+        .script-list { display: flex; flex-direction: column; gap: 8px; }
+        .script-item {
+            background: #111322; padding: 10px; border-radius: 6px; border: 1px solid #20253d;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .script-item:hover { border-color: var(--accent-green); }
+        .script-title { font-size: 0.85rem; font-weight: bold; color: #ffffff; }
+        
+        .btn-play {
+            background: #00ff87; color: #000; border: none; width: 34px; height: 34px;
+            border-radius: 50%; cursor: pointer; font-weight: bold; flex-shrink: 0; transition: transform 0.1s;
+        }
+        .btn-play:hover { transform: scale(1.1); box-shadow: 0 0 10px rgba(0, 255, 135, 0.5); }
+
+        /* STATUS DISPLAY */
+        .status-bar {
+            background: #090a12; padding: 10px 15px; border-radius: 6px; font-size: 0.85rem;
+            color: var(--accent-green); display: flex; justify-content: space-between; border: 1px solid #1a1e36;
+        }
+        .playing-now { color: var(--accent-yellow); font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <!-- Letreiro Digital com Oferta de Lançamento e WhatsApp Integrado -->
+    <div class="ticker-wrap">
+        <div class="ticker-text">
+            🔥 <strong>OFERTA ESPECIAL DE LANÇAMENTO:</strong> Adquira agora a sua <span class="highlight">Mesa de Áudio Profissional Personalizada</span> para Lives! 🎙️ Automatize suas transmissões, passe profissionalismo e venda 24 horas por dia no piloto automático. ⚡ Por apenas <strong>R$ 397,00 (Licença Vitalícia + Configuração)</strong>. 📲 <span class="highlight">Fale no WhatsApp: (34) 99871-8340</span> para garantir sua vaga promocional hoje mesmo! 🚀
+        </div>
+    </div>
+
+    <header>
+        <div class="title-container">
+            <h1>🎙️ MESA DE ÁUDIO PRO - LICENÇA VIP</h1>
+            <p>Painel com 8 Blocos x 5 Itens (40 Áudios Personalizados em MP3)</p>
+        </div>
+        <button class="btn btn-panic" onclick="stopAll()">🛑 ZERAR ÁUDIO / PÂNICO</button>
+    </header>
+
+    <div class="master-controls">
+        <div class="control-group">
+            <label>Intervalo do Modo Auto (Minutos):</label>
+            <input type="number" id="timerInput" value="10" min="1" max="60">
+        </div>
+        <div class="control-group">
+            <button id="btnAuto" class="btn btn-auto" onclick="toggleAutoMode()">
+                ⏱️ INICIAR MODO AUTO: <span id="autoStatus">DESLIGADO</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="status-bar">
+        <span>Status: <strong id="statusText">Aguardando...</strong></span>
+        <span>Próximo Áudio em: <strong id="timerDisplay">--:--</strong></span>
+        <span>Tocando Agora: <span class="playing-now" id="nowPlaying">Nenhum</span></span>
+    </div>
+
+    <!-- SESSÃO DE 20 EFEITOS SONOROS -->
+    <div class="sfx-container">
+        <h3>🎛️ Botoeira de Efeitos Especiais (SFX)</h3>
+        <div class="sfx-bar" id="sfxContainer"></div>
+    </div>
+
+    <!-- SESSÃO DOS 8 BLOCOS DE ÁUDIOS (5 ITENS CADA) -->
+    <div class="categories-grid" id="categoriesContainer"></div>
+
+    <script>
+        let activeAudios = [];
+        let mainVoiceAudio = null;
+        
+        // 1. CONFIGURAÇÃO DOS 20 EFEITOS SONOROS (Pasta sfx/)
+        const sfxData = [
+            { file: 'sfx/01_plim.mp3', label: '🔔 Plim Atenção' },
+            { file: 'sfx/02_moedas.mp3', label: '💰 Som Moedas' },
+            { file: 'sfx/03_tambores.mp3', label: '🥁 Tambores' },
+            { file: 'sfx/04_vinheta.mp3', label: '🎧 Vinheta Canal' },
+            { file: 'sfx/05_multidao.mp3', label: '🗣️ Multidão Ahh' },
+            { file: 'sfx/06_aplausos.mp3', label: '👏 Aplausos' },
+            { file: 'sfx/07_risada_palhaco.mp3', label: '🤡 Risada Palhaço' },
+            { file: 'sfx/08_buzina_caminhao.mp3', label: '🚛 Buzina Caminhão' },
+            { file: 'sfx/09_caixa_registradora.mp3', label: '🛒 Caixa Registradora' },
+            { file: 'sfx/10_sirene.mp3', label: '🚨 Sirene Alerta' },
+            { file: 'sfx/11_erro.mp3', label: '❌ Som de Erro' },
+            { file: 'sfx/12_acerto.mp3', label: '✅ Som de Acerto' },
+            { file: 'sfx/13_suspense.mp3', label: '🎬 Suspense' },
+            { file: 'sfx/14_batida.mp3', label: '🥊 Punch/Batida' },
+            { file: 'sfx/15_whoosh.mp3', label: '💨 Efeito Whoosh' },
+            { file: 'sfx/16_grilo.mp3', label: '🦗 Grilos (Silêncio)' },
+            { file: 'sfx/17_explosao.mp3', label: '💥 Explosão' },
+            { file: 'sfx/18_magica.mp3', label: '✨ Varadinha Mágica' },
+            { file: 'sfx/19_relogio.mp3', label: '⏱️ Tic-Tac Relógio' },
+            { file: 'sfx/20_win.mp3', label: '🏆 Vitória Epic' }
+        ];
+
+        // 2. CONFIGURAÇÃO DOS 8 BLOCOS COM EXATAMENTE 5 ITENS CADA (Pasta audios/)
+        const scriptsData = [
+            // BLOCO 1
+            { cat: "🎁 1. Sorteio & Engajamento", file: "audios/bloco1_01.mp3", title: "01 - O Anúncio do Sorteio" },
+            { cat: "🎁 1. Sorteio & Engajamento", file: "audios/bloco1_02.mp3", title: "02 - Regra das Curtidas e Likes" },
+            { cat: "🎁 1. Sorteio & Engajamento", file: "audios/bloco1_03.mp3", title: "03 - Chamada pro Grupo VIP" },
+            { cat: "🎁 1. Sorteio & Engajamento", file: "audios/bloco1_04.mp3", title: "04 - Compartilhe com 3 Amigos" },
+            { cat: "🎁 1. Sorteio & Engajamento", file: "audios/bloco1_05.mp3", title: "05 - Aquecimento no Chat (#EUQUERO)" },
+
+            // BLOCO 2
+            { cat: "🏛️ 2. Como Começar (MT5)", file: "audios/bloco2_01.mp3", title: "06 - Desmistificando o MT5" },
+            { cat: "🏛️ 2. Como Começar (MT5)", file: "audios/bloco2_02.mp3", title: "07 - Passo a Passo do Simulado" },
+            { cat: "🏛️ 2. Como Começar (MT5)", file: "audios/bloco2_03.mp3", title: "08 - Abrindo Conta na Corretora" },
+            { cat: "🏛️ 2. Como Começar (MT5)", file: "audios/bloco2_04.mp3", title: "09 - Requisitos de PC e VPS" },
+            { cat: "🏛️ 2. Como Começar (MT5)", file: "audios/bloco2_05.mp3", title: "10 - Instalação em Vídeo Rápida" },
+
+            // BLOCO 3
+            { cat: "🤖 3. Venda Robô Principal", file: "audios/bloco3_01.mp3", title: "11 - Filosofia Plug & Play" },
+            { cat: "🤖 3. Venda Robô Principal", file: "audios/bloco3_02.mp3", title: "12 - Oferta Flash ao Vivo" },
+            { cat: "🤖 3. Venda Robô Principal", file: "audios/bloco3_03.mp3", title: "13 - Parâmetros Caixote e Trailing" },
+            { cat: "🤖 3. Venda Robô Principal", file: "audios/bloco3_04.mp3", title: "14 - Operando Mini-Índice e Dólar" },
+            { cat: "🤖 3. Venda Robô Principal", file: "audios/bloco3_05.mp3", title: "15 - Como Comprar e Receber Imediato" },
+
+            // BLOCO 4
+            { cat: "🎓 4. Venda de Mentoria", file: "audios/bloco4_01.mp3", title: "16 - Crie Seus Próprios Robôs" },
+            { cat: "🎓 4. Venda de Mentoria", file: "audios/bloco4_02.mp3", title: "17 - Liberdade e Autonomia MQL5" },
+            { cat: "🎓 4. Venda de Mentoria", file: "audios/bloco4_03.mp3", title: "18 - Conteúdo do Curso Completo" },
+            { cat: "🎓 4. Venda de Mentoria", file: "audios/bloco4_04.mp3", title: "19 - Profissão Programador de Robôs" },
+            { cat: "🎓 4. Venda de Mentoria", file: "audios/bloco4_05.mp3", title: "20 - ÚLTIMAS VAGAS da Turma" },
+
+            // BLOCO 5
+            { cat: "🛡️ 5. Risco e Gerenciamento", file: "audios/bloco5_01.mp3", title: "21 - Stop e Meta Diária Automáticos" },
+            { cat: "🛡️ 5. Risco e Gerenciamento", file: "audios/bloco5_02.mp3", title: "22 - Sem Ilusão de Ganho Fácil" },
+            { cat: "🛡️ 5. Risco e Gerenciamento", file: "audios/bloco5_03.mp3", title: "23 - Por que Robôs Erram Menos" },
+            { cat: "🛡️ 5. Risco e Gerenciamento", file: "audios/bloco5_04.mp3", title: "24 - Proteção Trailing Stop e Break-Even" },
+            { cat: "🛡️ 5. Risco e Gerenciamento", file: "audios/bloco5_05.mp3", title: "25 - Testando no Histórico (Backtest)" },
+
+            // BLOCO 6
+            { cat: "💬 6. Atendimento / Dúvidas", file: "audios/bloco6_01.mp3", title: "26 - Chama no WhatsApp do Suporte" },
+            { cat: "💬 6. Atendimento / Dúvidas", file: "audios/bloco6_02.mp3", title: "27 - Funciona pelo Celular?" },
+            { cat: "💬 6. Atendimento / Dúvidas", file: "audios/bloco6_03.mp3", title: "28 - Dá pra Começar com Pouco Dinheiro?" },
+            { cat: "💬 6. Atendimento / Dúvidas", file: "audios/bloco6_04.mp3", title: "29 - Preciso Deixar o PC Ligado?" },
+            { cat: "💬 6. Atendimento / Dúvidas", file: "audios/bloco6_05.mp3", title: "30 - Qual a Margem Mínima Exigida?" },
+
+            // BLOCO 7
+            { cat: "🔥 7. Call to Action (Ação)", file: "audios/bloco7_01.mp3", title: "31 - Clica no Link da Bio Agora" },
+            { cat: "🔥 7. Call to Action (Ação)", file: "audios/bloco7_02.mp3", title: "32 - Siga o Perfil para Não Perder" },
+            { cat: "🔥 7. Call to Action (Ação)", file: "audios/bloco7_03.mp3", title: "33 - Últimos 10 Minutos do Desconto" },
+            { cat: "🔥 7. Call to Action (Ação)", file: "audios/bloco7_04.mp3", title: "34 - Garanta Seu Robô Antes que Feche" },
+            { cat: "🔥 7. Call to Action (Ação)", file: "audios/bloco7_05.mp3", title: "35 - Aponta a Câmera pro QR Code" },
+
+            // BLOCO 8
+            { cat: "⭐ 8. Provas Sociais", file: "audios/bloco8_01.mp3", title: "36 - Aluno Bateu Meta Hoje Cedo" },
+            { cat: "⭐ 8. Provas Sociais", file: "audios/bloco8_02.mp3", title: "37 - Relatório Mensal do Robô Positivo" },
+            { cat: "⭐ 8. Provas Sociais", file: "audios/bloco8_03.mp3", title: "38 - Zero Loss na Semana Passada" },
+            { cat: "⭐ 8. Provas Sociais", file: "audios/bloco8_04.mp3", title: "39 - Feedback dos Alunos da Mentoria" },
+            { cat: "⭐ 8. Provas Sociais", file: "audios/bloco8_05.mp3", title: "40 - Mais de 500 Robôs Rodando Hoje" }
+        ];
+
+        // RENDERIZAR INTERFACE
+        function renderInterface() {
+            const sfxDiv = document.getElementById('sfxContainer');
+            sfxData.forEach(sfx => {
+                const btn = document.createElement('button');
+                btn.className = 'btn-sfx';
+                btn.innerText = sfx.label;
+                btn.onclick = () => playAudio(sfx.file, sfx.label);
+                sfxDiv.appendChild(btn);
+            });
+
+            const catDiv = document.getElementById('categoriesContainer');
+            const categories = [...new Set(scriptsData.map(s => s.cat))];
+
+            categories.forEach(catName => {
+                const card = document.createElement('div');
+                card.className = 'category-card';
+                card.innerHTML = `<h3>${catName}</h3><div class="script-list"></div>`;
+                const list = card.querySelector('.script-list');
+
+                scriptsData.filter(s => s.cat === catName).forEach((script) => {
+                    const item = document.createElement('div');
+                    item.className = 'script-item';
+                    item.innerHTML = `
+                        <span class="script-title">${script.title}</span>
+                        <button class="btn-play" onclick="playMainScript('${script.file}', '${script.title}')">▶</button>
+                    `;
+                    list.appendChild(item);
+                });
+                catDiv.appendChild(card);
+            });
+        }
+
+        // REPRODUÇÃO DE SFX
+        function playAudio(filePath, title) {
+            let audioObj = new Audio(filePath);
+            activeAudios.push(audioObj);
+            audioObj.play().catch(e => console.log("Arquivo não encontrado: " + filePath));
+            
+            audioObj.onended = () => {
+                activeAudios = activeAudios.filter(a => a !== audioObj);
+            };
+        }
+
+        // REPRODUÇÃO DE ÁUDIOS DOS BLOCOS
+        function playMainScript(filePath, title) {
+            if (mainVoiceAudio) {
+                mainVoiceAudio.pause();
+                mainVoiceAudio.currentTime = 0;
+            }
+            
+            document.getElementById('nowPlaying').innerText = title;
+            document.getElementById('statusText').innerText = "Reproduzindo...";
+            
+            mainVoiceAudio = new Audio(filePath);
+            activeAudios.push(mainVoiceAudio);
+            mainVoiceAudio.play().catch(e => alert("Áudio não encontrado na pasta: " + filePath));
+
+            mainVoiceAudio.onended = () => {
+                document.getElementById('statusText').innerText = "Aguardando próxima ação";
+                document.getElementById('nowPlaying').innerText = "Nenhum";
+            };
+        }
+
+        // BOTÃO DE PÂNICO
+        function stopAll() {
+            activeAudios.forEach(audio => {
+                audio.pause();
+                audio.currentTime = 0;
+            });
+            activeAudios = [];
+            document.getElementById('statusText').innerText = "Parado pelo usuário (Pânico)";
+            document.getElementById('nowPlaying').innerText = "Nenhum";
+        }
+
+        // MODO AUTOMÁTICO
+        let autoMode = false;
+        let autoIndex = 0;
+        let timerInterval = null;
+        let countdownSeconds = 0;
+
+        function toggleAutoMode() {
+            autoMode = !autoMode;
+            const btn = document.getElementById('btnAuto');
+            const status = document.getElementById('autoStatus');
+
+            if (autoMode) {
+                btn.classList.add('active');
+                status.innerText = "LIGADO";
+                startTimer();
+            } else {
+                btn.classList.remove('active');
+                status.innerText = "DESLIGADO";
+                clearInterval(timerInterval);
+                document.getElementById('timerDisplay').innerText = "--:--";
+            }
+        }
+
+        function startTimer() {
+            const inputMinutes = parseInt(document.getElementById('timerInput').value);
+            countdownSeconds = inputMinutes * 60; 
+            
+            clearInterval(timerInterval);
+
+            timerInterval = setInterval(() => {
+                countdownSeconds--;
+                
+                const min = Math.floor(countdownSeconds / 60).toString().padStart(2, '0');
+                const sec = (countdownSeconds % 60).toString().padStart(2, '0');
+                document.getElementById('timerDisplay').innerText = `${min}:${sec}`;
+
+                if (countdownSeconds <= 0) {
+                    playNextAutoScript();
+                    countdownSeconds = parseInt(document.getElementById('timerInput').value) * 60;
+                }
+            }, 1000);
+        }
+
+        function playNextAutoScript() {
+            const script = scriptsData[autoIndex];
+            playMainScript(script.file, script.title);
+            autoIndex = (autoIndex + 1) % scriptsData.length;
+        }
+
+        renderInterface();
+    </script>
+</body>
+</html>
