@@ -1,420 +1,732 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel PRO de Transmissão - Área Exclusiva</title>
-    <style>
-        :root {
-            --bg-color: #0b0d17;
-            --card-bg: #151828;
-            --accent-cyan: #00f2fe;
-            --accent-green: #00ff87;
-            --accent-red: #ff2a6d;
-            --accent-yellow: #ffe600;
-            --text-color: #ffffff;
-            --text-muted: #8a8fbf;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mesa de Áudio Live Stream - Auto Trader</title>
+  <style>
+    :root {
+      --bg-color: #0f172a;
+      --card-bg: #1e293b;
+      --accent: #3b82f6;
+      --accent-hover: #2563eb;
+      --danger: #ef4444;
+      --danger-hover: #dc2626;
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --border: #334155;
+    }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
 
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
+    body {
+      background-color: var(--bg-color);
+      color: var(--text);
+      padding: 20px;
+      min-height: 100vh;
+    }
 
-        /* LETREIRO DIGITAL (MARQUEE NEON - VELOCIDADE ULTRA SUAVE) */
-        .ticker-wrap {
-            width: 100%;
-            overflow: hidden;
-            background: linear-gradient(90deg, #111322, #1d2138, #111322);
-            border: 2px solid var(--accent-yellow);
-            border-radius: 12px;
-            padding: 14px 0;
-            box-shadow: 0 0 15px rgba(255, 230, 0, 0.25);
-            display: flex;
-            align-items: center;
-        }
+    header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      margin-bottom: 25px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    }
 
-        .ticker-text {
-            display: inline-block;
-            white-space: nowrap;
-            padding-left: 100%;
-            animation: marquee 88s linear infinite; /* Velocidade reduzida pela metade (88s) */
-            font-size: 1.1rem;
-            color: #ffffff;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-        }
+    .title-area h1 {
+      font-size: 1.5rem;
+      color: #60a5fa;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
 
-        .ticker-text strong {
-            color: var(--accent-yellow);
-            text-shadow: 0 0 8px rgba(255, 230, 0, 0.6);
-        }
+    .title-area p {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      margin-top: 4px;
+    }
 
-        .ticker-text span.highlight {
-            color: var(--accent-cyan);
-            font-weight: bold;
-        }
+    .panic-btn {
+      background-color: var(--danger);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      font-size: 1rem;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
+    }
 
-        @keyframes marquee {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-100%); }
-        }
+    .panic-btn:hover {
+      background-color: var(--danger-hover);
+      transform: scale(1.03);
+    }
 
-        /* PAUSAR AO PASSAR O MOUSE */
-        .ticker-wrap:hover .ticker-text {
-            animation-play-state: paused;
-        }
+    /* Painel de Automação / Modo Café */
+    .auto-panel {
+      background: #0f172a;
+      border: 1px solid #3b82f6;
+      padding: 18px;
+      border-radius: 12px;
+      margin-bottom: 25px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 15px;
+      box-shadow: 0 0 15px rgba(59, 130, 246, 0.2);
+    }
 
-        header {
-            background: linear-gradient(135deg, #1e2238, #111322);
-            padding: 20px;
-            border-radius: 12px;
-            border: 1px solid rgba(0, 242, 254, 0.2);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
+    .auto-title {
+      font-weight: bold;
+      color: #60a5fa;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 1.1rem;
+      width: 100%;
+    }
 
-        .title-container h1 { font-size: 1.6rem; color: var(--accent-cyan); }
-        .title-container p { color: var(--text-muted); font-size: 0.9rem; margin-top: 4px; }
+    .auto-controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+    }
 
-        /* PAINEL DE CONTROLE MASTER */
-        .master-controls {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-            background: #121422;
-            padding: 15px;
-            border-radius: 10px;
-            border: 1px solid #282d4a;
-            justify-content: space-between;
-            flex-wrap: wrap;
-        }
+    .control-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.9rem;
+    }
 
-        .control-group { display: flex; align-items: center; gap: 10px; }
-        label { font-size: 0.85rem; color: var(--text-muted); font-weight: bold; }
-        
-        input[type="number"] {
-            background: #1c2035; color: #fff; border: 1px solid #383e66;
-            padding: 8px; border-radius: 6px; width: 80px; outline: none; font-weight: bold;
-        }
+    select, input[type="number"] {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      outline: none;
+    }
 
-        .btn {
-            padding: 10px 18px; border: none; border-radius: 6px; font-weight: bold;
-            cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; gap: 8px;
-        }
+    select:focus, input[type="number"]:focus {
+      border-color: var(--accent);
+    }
 
-        .btn-panic { background: var(--accent-red); color: white; font-size: 1.1rem;}
-        .btn-panic:hover { background: #d61c56; transform: scale(1.02); }
+    .btn-start-auto {
+      background: var(--success);
+      color: white;
+      border: none;
+      padding: 9px 18px;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
 
-        .btn-auto { background: #282d4a; color: white; border: 1px solid var(--accent-cyan); }
-        .btn-auto.active { background: var(--accent-cyan); color: #000; box-shadow: 0 0 12px rgba(0, 242, 254, 0.6); }
+    .btn-start-auto:hover {
+      background: #16a34a;
+    }
 
-        /* EFEITOS SONOROS (20 BOTOES) */
-        .sfx-container {
-            background: var(--card-bg); padding: 15px; border-radius: 10px; border: 1px solid #262c45;
-        }
-        .sfx-container h3 { color: var(--accent-yellow); margin-bottom: 15px; font-size: 1rem; }
-        .sfx-bar {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px;
-        }
-        .btn-sfx {
-            background: #1f243d; border: 1px solid #3d4675; color: var(--accent-yellow);
-            padding: 10px; border-radius: 8px; cursor: pointer; font-size: 0.8rem; font-weight: bold;
-        }
-        .btn-sfx:hover { background: #2d3459; border-color: var(--accent-yellow); }
+    .btn-stop-auto {
+      background: var(--warning);
+      color: white;
+      border: none;
+      padding: 9px 18px;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
 
-        /* GRID DE ÁUDIOS */
-        .categories-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 20px; }
-        .category-card { background: var(--card-bg); border-radius: 10px; padding: 15px; border: 1px solid #262c45; }
-        .category-card h3 { font-size: 1rem; color: var(--accent-cyan); margin-bottom: 12px; padding-bottom: 6px; border-bottom: 1px solid #262c45; }
-        
-        .script-list { display: flex; flex-direction: column; gap: 8px; }
-        .script-item {
-            background: #111322; padding: 10px; border-radius: 6px; border: 1px solid #20253d;
-            display: flex; justify-content: space-between; align-items: center;
-        }
-        .script-item:hover { border-color: var(--accent-green); }
-        .script-title { font-size: 0.85rem; font-weight: bold; color: #ffffff; }
-        
-        .btn-play {
-            background: #00ff87; color: #000; border: none; width: 34px; height: 34px;
-            border-radius: 50%; cursor: pointer; font-weight: bold; flex-shrink: 0; transition: transform 0.1s;
-        }
-        .btn-play:hover { transform: scale(1.1); box-shadow: 0 0 10px rgba(0, 255, 135, 0.5); }
+    .btn-stop-auto:hover {
+      background: #d97706;
+    }
 
-        /* STATUS DISPLAY */
-        .status-bar {
-            background: #090a12; padding: 10px 15px; border-radius: 6px; font-size: 0.85rem;
-            color: var(--accent-green); display: flex; justify-content: space-between; border: 1px solid #1a1e36;
-        }
-        .playing-now { color: var(--accent-yellow); font-weight: bold; }
-    </style>
+    .auto-status {
+      font-weight: bold;
+      font-size: 0.95rem;
+      padding: 8px 14px;
+      border-radius: 6px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      flex-grow: 1;
+      text-align: center;
+    }
+
+    .auto-status.active {
+      color: #4ade80;
+      border-color: #22c55e;
+      box-shadow: 0 0 10px rgba(34, 197, 94, 0.2);
+    }
+
+    /* Tabs dos Blocos */
+    .tabs-container {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 10px;
+      margin-bottom: 15px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .tab-btn {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 10px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+
+    .tab-btn.active, .tab-btn:hover {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
+
+    /* Grid de Áudios */
+    .block-content {
+      display: none;
+    }
+
+    .block-content.active {
+      display: block;
+    }
+
+    .audio-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+
+    .audio-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 12px;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+
+    .audio-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    .audio-card.playing {
+      border-color: var(--success);
+      box-shadow: 0 0 12px rgba(34, 197, 94, 0.3);
+      background: #14232c;
+    }
+
+    .audio-title {
+      font-size: 0.9rem;
+      font-weight: bold;
+      color: var(--text);
+    }
+
+    .audio-desc {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      line-height: 1.3;
+    }
+
+    .play-btn {
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: background 0.2s;
+    }
+
+    .play-btn:hover {
+      background: var(--accent-hover);
+    }
+
+    .playing .play-btn {
+      background: var(--danger);
+    }
+
+    /* Seção SFX */
+    .sfx-section {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 20px;
+    }
+
+    .sfx-section h2 {
+      font-size: 1.2rem;
+      color: #f59e0b;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .sfx-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 10px;
+    }
+
+    .sfx-btn {
+      background: #334155;
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-align: center;
+      transition: all 0.2s;
+    }
+
+    .sfx-btn:hover {
+      background: #475569;
+      border-color: #f59e0b;
+    }
+
+    .sfx-btn.playing {
+      background: #f59e0b;
+      color: #000;
+      font-weight: bold;
+    }
+  </style>
 </head>
 <body>
 
-    <!-- Letreiro Digital com Oferta de Lançamento e WhatsApp Integrado -->
-    <div class="ticker-wrap">
-        <div class="ticker-text">
-            🔥 <strong>OFERTA ESPECIAL DE LANÇAMENTO:</strong> Adquira agora a sua <span class="highlight">Mesa de Áudio Profissional Personalizada</span> para Lives! 🎙️ Automatize suas transmissões, passe profissionalismo e venda 24 horas por dia no piloto automático. ⚡ Por apenas <strong>R$ 397,00 (Licença Vitalícia + Configuração)</strong>. 📲 <span class="highlight">Fale no WhatsApp: (34) 99871-8340</span> para garantir sua vaga promocional hoje mesmo! 🚀
-        </div>
+  <!-- CABEÇALHO COM BOTÃO DE PÂNICO -->
+  <header>
+    <div class="title-area">
+      <h1>🎙️ Mesa de Áudio - Live Stream</h1>
+      <p>Controle de locução e efeitos sonoros para transmissões ao vivo</p>
     </div>
+    <button class="panic-btn" onclick="stopAllAudio()">
+      🚨 ZERAR ÁUDIO / PÂNICO
+    </button>
+  </header>
 
-    <header>
-        <div class="title-container">
-            <h1>🎙️ MESA DE ÁUDIO PRO - LICENÇA VIP</h1>
-            <p>Painel com 8 Blocos x 5 Itens (40 Áudios Personalizados em MP3)</p>
-        </div>
-        <button class="btn btn-panic" onclick="stopAll()">🛑 ZERAR ÁUDIO / PÂNICO</button>
-    </header>
+  <!-- MODO AUTOMÁTICO (MODO CAFÉ / AUSÊNCIA) -->
+  <div class="auto-panel">
+    <div class="auto-title">
+      ☕ Modo Automação (Piloto Automático para Ausência)
+    </div>
+    <div class="auto-controls">
+      <div class="control-group">
+        <label for="autoBlockSelect">Bloco:</label>
+        <select id="autoBlockSelect">
+          <option value="1">Bloco 1: Sorteio & Engajamento</option>
+          <option value="2">Bloco 2: Como Começar (MT5)</option>
+          <option value="3">Bloco 3: Venda Robô Principal</option>
+          <option value="4">Bloco 4: Venda de Mentoria</option>
+          <option value="5">Bloco 5: Risco e Gerenciamento</option>
+          <option value="6">Bloco 6: Atendimento / Dúvidas</option>
+          <option value="7">Bloco 7: Call to Action (Ação)</option>
+          <option value="8">Bloco 8: Provas Sociais</option>
+          <option value="all">Todos os Blocos (Sequencial)</option>
+        </select>
+      </div>
 
-    <div class="master-controls">
-        <div class="control-group">
-            <label>Intervalo do Modo Auto (Minutos):</label>
-            <input type="number" id="timerInput" value="10" min="1" max="60">
-        </div>
-        <div class="control-group">
-            <button id="btnAuto" class="btn btn-auto" onclick="toggleAutoMode()">
-                ⏱️ INICIAR MODO AUTO: <span id="autoStatus">DESLIGADO</span>
+      <div class="control-group">
+        <label for="autoInterval">Pausa entre áudios (segundos):</label>
+        <input type="number" id="autoInterval" value="30" min="5" max="600" style="width: 80px;">
+      </div>
+
+      <button class="btn-start-auto" onclick="startAutomation()">▶️ Iniciar Automação</button>
+      <button class="btn-stop-auto" onclick="stopAutomation()">⏹️ Parar Automação</button>
+
+      <div class="auto-status" id="autoStatus">
+        Automação Parada
+      </div>
+    </div>
+  </div>
+
+  <!-- NAVEGAÇÃO DE TABS DOS BLOCOS -->
+  <div class="tabs-container" id="tabsContainer"></div>
+
+  <!-- CONTEÚDO DOS BLOCOS -->
+  <div id="blocksContainer"></div>
+
+  <!-- EFEITOS SONOROS (SFX) -->
+  <div class="sfx-section">
+    <h2>🔔 Efeitos Sonoros Rápidos (SFX)</h2>
+    <div class="sfx-grid" id="sfxGrid"></div>
+  </div>
+
+  <script>
+    // DADOS DOS BLOCOS E ÁUDIOS (FORMATO .WAV)
+    const blocksData = [
+      {
+        id: 1,
+        title: "🎁 Bloco 1: Sorteio & Engajamento",
+        audios: [
+          { file: "audios/bloco1_01.wav", title: "01. Sorteio Especial", desc: "Aviso de sorteio empolgado com risada" },
+          { file: "audios/bloco1_02.wav", title: "02. Desafio de Likes", desc: "Chamada rápida para curtir a live" },
+          { file: "audios/bloco1_03.wav", title: "03. Grupo VIP WhatsApp", desc: "Aviso em tom de segredo/sussurro" },
+          { file: "audios/bloco1_04.wav", title: "04. Compartilhar Live", desc: "Convocação para enviar para amigos" },
+          { file: "audios/bloco1_05.wav", title: "05. Hashtag #EUQUERO", desc: "Chamada forte para interação no chat" }
+        ]
+      },
+      {
+        id: 2,
+        title: "🏛️ Bloco 2: Como Começar (MT5)",
+        audios: [
+          { file: "audios/bloco2_01.wav", title: "01. MT5 é Simples", desc: "Explicando que o MetaTrader é fácil" },
+          { file: "audios/bloco2_02.wav", title: "02. Regra nº 1: Simulado", desc: "Alerta de segurança para testar em demo" },
+          { file: "audios/bloco2_03.wav", title: "03. Conta Gratuita", desc: "Abertura de conta rápida na corretora" },
+          { file: "audios/bloco2_04.wav", title: "04. Meu PC Roda?", desc: "Desmistificando requisitos do computador" },
+          { file: "audios/bloco2_05.wav", title: "05. Instalação em 5 min", desc: "Rapidez na instalação do robô" }
+        ]
+      },
+      {
+        id: 3,
+        title: "🤖 Bloco 3: Venda Robô Principal",
+        audios: [
+          { file: "audios/bloco3_01.wav", title: "01. Plug and Play", desc: "Sem necessidade de programar" },
+          { file: "audios/bloco3_02.wav", title: "02. Oferta Flash", desc: "Anúncio de desconto exclusivo na live" },
+          { file: "audios/bloco3_03.wav", title: "03. Trailing Stop & Caixote", desc: "Explicação técnica de proteção" },
+          { file: "audios/bloco3_04.wav", title: "04. Mini-Índice e Dólar", desc: "Compatibilidade de ativos" },
+          { file: "audios/bloco3_05.wav", title: "05. Entrega Imediata", desc: "Envio rápido no e-mail com vídeos" }
+        ]
+      },
+      {
+        id: 4,
+        title: "🎓 Bloco 4: Venda de Mentoria",
+        audios: [
+          { file: "audios/bloco4_01.wav", title: "01. Crie Seus Robôs", desc: "Provocação para aprender MQL5" },
+          { file: "audios/bloco4_02.wav", title: "02. Liberdade MQL5", desc: "Visão de ter ideias rodando 24h" },
+          { file: "audios/bloco4_03.wav", title: "03. Pega Pela Mão", desc: "Apresentação do curso completo" },
+          { file: "audios/bloco4_04.wav", title: "04. Profissão Valorizada", desc: "Desenvolvedor quantitativo" },
+          { file: "audios/bloco4_05.wav", title: "05. Últimas Vagas", desc: "Urgência de fechamento de turma" }
+        ]
+      },
+      {
+        id: 5,
+        title: "🛡️ Bloco 5: Risco e Gerenciamento",
+        audios: [
+          { file: "audios/bloco5_01.wav", title: "01. Stop Loss & Meta", desc: "Proteção da conta e limites" },
+          { file: "audios/bloco5_02.wav", title: "02. Sem Promessa Fácil", desc: "Alerta realista sobre o mercado" },
+          { file: "audios/bloco5_03.wav", title: "03. Robô Sem Emoção", desc: "Vantagem da disciplina robótica" },
+          { file: "audios/bloco5_04.wav", title: "04. Trava Break-Even", desc: "Movendo stop para o 0x0" },
+          { file: "audios/bloco5_05.wav", title: "05. Teste de Histórico", desc: "Backtest prévio antes de operar" }
+        ]
+      },
+      {
+        id: 6,
+        title: "💬 Bloco 6: Atendimento / Dúvidas",
+        audios: [
+          { file: "audios/bloco6_01.wav", title: "01. Suporte no WhatsApp", desc: "Atendimento direto da equipe" },
+          { file: "audios/bloco6_02.wav", title: "02. App no Celular", desc: "Acompanhamento em tempo real" },
+          { file: "audios/bloco6_03.wav", title: "03. Capital Inicial", desc: "Dá para começar com pouco" },
+          { file: "audios/bloco6_04.wav", title: "04. Servidor VPS Nuvem", desc: "Rodar 24h sem PC ligado" },
+          { file: "audios/bloco6_05.wav", title: "05. Margem Recomendada", desc: "Começar com 1 contrato" }
+        ]
+      },
+      {
+        id: 7,
+        title: "🔥 Bloco 7: Call to Action (Ação)",
+        audios: [
+          { file: "audios/bloco7_01.wav", title: "01. Link no Chat AGORA", desc: "Comando direto de clique" },
+          { file: "audios/bloco7_02.wav", title: "02. Inscreva-se no Canal", desc: "Ativar o sininho do YouTube" },
+          { file: "audios/bloco7_03.wav", title: "03. Faltam 10 Minutos", desc: "Contagem regressiva de oferta" },
+          { file: "audios/bloco7_04.wav", title: "04. Decisão Profissional", desc: "Garanta a licença do robô" },
+          { file: "audios/bloco7_05.wav", title: "05. QR Code na Tela", desc: "Apontar celular para comprar" }
+        ]
+      },
+      {
+        id: 8,
+        title: "⭐ Bloco 8: Provas Sociais",
+        audios: [
+          { file: "audios/bloco8_01.wav", title: "01. Meta em 15 Min", desc: "Aluno comemorando ganho" },
+          { file: "audios/bloco8_02.wav", title: "02. 80% Taxa de Acerto", desc: "Relatório de performance" },
+          { file: "audios/bloco8_03.wav", title: "03. Semana Zero Loss", desc: "Euforia de 100% de acerto" },
+          { file: "audios/bloco8_04.wav", title: "04. Depoimentos Alunos", desc: "Transformação e disciplina" },
+          { file: "audios/bloco8_05.wav", title: "05. +500 Robôs Rodando", desc: "Força da comunidade quant" }
+        ]
+      }
+    ];
+
+    // DADOS DOS EFEITOS SONOROS (SFX em .MP3)
+    const sfxData = [
+      { file: "sfx/01_plim.mp3", name: "01. Plim" },
+      { file: "sfx/02_moedas.mp3", name: "02. Moedas" },
+      { file: "sfx/03_tambores.mp3", name: "03. Tambores" },
+      { file: "sfx/04_vinheta.mp3", name: "04. Vinheta" },
+      { file: "sfx/05_multidao.mp3", name: "05. Multidão" },
+      { file: "sfx/06_aplausos.mp3", name: "06. Aplausos" },
+      { file: "sfx/07_risada_palhaco.mp3", name: "07. Risada" },
+      { file: "sfx/08_buzina_caminhao.mp3", name: "08. Buzina" },
+      { file: "sfx/09_caixa_registradora.mp3", name: "09. Caixa Reg." },
+      { file: "sfx/10_sirene.mp3", name: "10. Sirene" },
+      { file: "sfx/11_erro.mp3", name: "11. Erro" },
+      { file: "sfx/12_acerto.mp3", name: "12. Acerto" },
+      { file: "sfx/13_suspense.mp3", name: "13. Suspense" },
+      { file: "sfx/14_batida.mp3", name: "14. Batida" },
+      { file: "sfx/15_whoosh.mp3", name: "15. Whoosh" },
+      { file: "sfx/16_grilo.mp3", name: "16. Grilo" },
+      { file: "sfx/17_explosao.mp3", name: "17. Explosão" },
+      { file: "sfx/18_magica.mp3", name: "18. Mágica" },
+      { file: "sfx/19_relogio.mp3", name: "19. Relógio" },
+      { file: "sfx/20_win.mp3", name: "20. Vitória" }
+    ];
+
+    let currentAudio = null;
+    let autoPlaylist = [];
+    let autoIndex = 0;
+    let isAutomationRunning = false;
+    let countdownTimer = null;
+
+    function init() {
+      const tabsContainer = document.getElementById('tabsContainer');
+      const blocksContainer = document.getElementById('blocksContainer');
+      const sfxGrid = document.getElementById('sfxGrid');
+
+      // 1. Renderizar Tabs e Blocos
+      blocksData.forEach((block, index) => {
+        const tabBtn = document.createElement('button');
+        tabBtn.className = `tab-btn ${index === 0 ? 'active' : ''}`;
+        tabBtn.innerText = block.title.split(':')[0];
+        tabBtn.title = block.title;
+        tabBtn.onclick = () => switchTab(block.id);
+        tabsContainer.appendChild(tabBtn);
+
+        const blockDiv = document.createElement('div');
+        blockDiv.className = `block-content ${index === 0 ? 'active' : ''}`;
+        blockDiv.id = `block-${block.id}`;
+
+        const grid = document.createElement('div');
+        grid.className = 'audio-grid';
+
+        block.audios.forEach((item) => {
+          const card = document.createElement('div');
+          card.className = 'audio-card';
+          card.id = `card-${item.file.replace(/[/.]/g, '_')}`;
+
+          card.innerHTML = `
+            <div>
+              <div class="audio-title">${item.title}</div>
+              <div class="audio-desc">${item.desc}</div>
+            </div>
+            <button class="play-btn" onclick="togglePlay('${item.file}', this)">
+              ▶️ Play
             </button>
-        </div>
-    </div>
+          `;
+          grid.appendChild(card);
+        });
 
-    <div class="status-bar">
-        <span>Status: <strong id="statusText">Aguardando...</strong></span>
-        <span>Próximo Áudio em: <strong id="timerDisplay">--:--</strong></span>
-        <span>Tocando Agora: <span class="playing-now" id="nowPlaying">Nenhum</span></span>
-    </div>
+        blockDiv.appendChild(grid);
+        blocksContainer.appendChild(blockDiv);
+      });
 
-    <!-- SESSÃO DE 20 EFEITOS SONOROS -->
-    <div class="sfx-container">
-        <h3>🎛️ Botoeira de Efeitos Especiais (SFX)</h3>
-        <div class="sfx-bar" id="sfxContainer"></div>
-    </div>
+      // 2. Renderizar SFX
+      sfxData.forEach(sfx => {
+        const btn = document.createElement('button');
+        btn.className = 'sfx-btn';
+        btn.innerText = sfx.name;
+        btn.onclick = () => playSFX(sfx.file, btn);
+        sfxGrid.appendChild(btn);
+      });
+    }
 
-    <!-- SESSÃO DOS 8 BLOCOS DE ÁUDIOS (5 ITENS CADA) -->
-    <div class="categories-grid" id="categoriesContainer"></div>
+    function switchTab(blockId) {
+      document.querySelectorAll('.tab-btn').forEach((btn, idx) => {
+        btn.classList.toggle('active', blocksData[idx].id === blockId);
+      });
 
-    <script>
-        let activeAudios = [];
-        let mainVoiceAudio = null;
-        
-        // 1. CONFIGURAÇÃO DOS 20 EFEITOS SONOROS (Pasta sfx/)
-        const sfxData = [
-            { file: 'sfx/01_plim.mp3', label: '🔔 Plim Atenção' },
-            { file: 'sfx/02_moedas.mp3', label: '💰 Som Moedas' },
-            { file: 'sfx/03_tambores.mp3', label: '🥁 Tambores' },
-            { file: 'sfx/04_vinheta.mp3', label: '🎧 Vinheta Canal' },
-            { file: 'sfx/05_multidao.mp3', label: '🗣️ Multidão Ahh' },
-            { file: 'sfx/06_aplausos.mp3', label: '👏 Aplausos' },
-            { file: 'sfx/07_risada_palhaco.mp3', label: '🤡 Risada Palhaço' },
-            { file: 'sfx/08_buzina_caminhao.mp3', label: '🚛 Buzina Caminhão' },
-            { file: 'sfx/09_caixa_registradora.mp3', label: '🛒 Caixa Registradora' },
-            { file: 'sfx/10_sirene.mp3', label: '🚨 Sirene Alerta' },
-            { file: 'sfx/11_erro.mp3', label: '❌ Som de Erro' },
-            { file: 'sfx/12_acerto.mp3', label: '✅ Som de Acerto' },
-            { file: 'sfx/13_suspense.mp3', label: '🎬 Suspense' },
-            { file: 'sfx/14_batida.mp3', label: '🥊 Punch/Batida' },
-            { file: 'sfx/15_whoosh.mp3', label: '💨 Efeito Whoosh' },
-            { file: 'sfx/16_grilo.mp3', label: '🦗 Grilos (Silêncio)' },
-            { file: 'sfx/17_explosao.mp3', label: '💥 Explosão' },
-            { file: 'sfx/18_magica.mp3', label: '✨ Varadinha Mágica' },
-            { file: 'sfx/19_relogio.mp3', label: '⏱️ Tic-Tac Relógio' },
-            { file: 'sfx/20_win.mp3', label: '🏆 Vitória Epic' }
-        ];
+      document.querySelectorAll('.block-content').forEach(content => {
+        content.classList.toggle('active', content.id === `block-${blockId}`);
+      });
+    }
 
-        // 2. CONFIGURAÇÃO DOS 8 BLOCOS COM EXATAMENTE 5 ITENS CADA (Pasta audios/)
-        const scriptsData = [
-            // BLOCO 1
-            { cat: "🎁 1. Sorteio & Engajamento", file: "audios/bloco1_01.mp3", title: "01 - O Anúncio do Sorteio" },
-            { cat: "🎁 1. Sorteio & Engajamento", file: "audios/bloco1_02.mp3", title: "02 - Regra das Curtidas e Likes" },
-            { cat: "🎁 1. Sorteio & Engajamento", file: "audios/bloco1_03.mp3", title: "03 - Chamada pro Grupo VIP" },
-            { cat: "🎁 1. Sorteio & Engajamento", file: "audios/bloco1_04.mp3", title: "04 - Compartilhe com 3 Amigos" },
-            { cat: "🎁 1. Sorteio & Engajamento", file: "audios/bloco1_05.mp3", title: "05 - Aquecimento no Chat (#EUQUERO)" },
+    function togglePlay(filePath, button) {
+      const card = button.closest('.audio-card');
 
-            // BLOCO 2
-            { cat: "🏛️ 2. Como Começar (MT5)", file: "audios/bloco2_01.mp3", title: "06 - Desmistificando o MT5" },
-            { cat: "🏛️ 2. Como Começar (MT5)", file: "audios/bloco2_02.mp3", title: "07 - Passo a Passo do Simulado" },
-            { cat: "🏛️ 2. Como Começar (MT5)", file: "audios/bloco2_03.mp3", title: "08 - Abrindo Conta na Corretora" },
-            { cat: "🏛️ 2. Como Começar (MT5)", file: "audios/bloco2_04.mp3", title: "09 - Requisitos de PC e VPS" },
-            { cat: "🏛️ 2. Como Começar (MT5)", file: "audios/bloco2_05.mp3", title: "10 - Instalação em Vídeo Rápida" },
+      if (currentAudio && currentAudio.src.endsWith(encodeURI(filePath)) && !currentAudio.paused) {
+        currentAudio.pause();
+        resetPlayUI();
+        return;
+      }
 
-            // BLOCO 3
-            { cat: "🤖 3. Venda Robô Principal", file: "audios/bloco3_01.mp3", title: "11 - Filosofia Plug & Play" },
-            { cat: "🤖 3. Venda Robô Principal", file: "audios/bloco3_02.mp3", title: "12 - Oferta Flash ao Vivo" },
-            { cat: "🤖 3. Venda Robô Principal", file: "audios/bloco3_03.mp3", title: "13 - Parâmetros Caixote e Trailing" },
-            { cat: "🤖 3. Venda Robô Principal", file: "audios/bloco3_04.mp3", title: "14 - Operando Mini-Índice e Dólar" },
-            { cat: "🤖 3. Venda Robô Principal", file: "audios/bloco3_05.mp3", title: "15 - Como Comprar e Receber Imediato" },
+      stopAllAudio(false);
 
-            // BLOCO 4
-            { cat: "🎓 4. Venda de Mentoria", file: "audios/bloco4_01.mp3", title: "16 - Crie Seus Próprios Robôs" },
-            { cat: "🎓 4. Venda de Mentoria", file: "audios/bloco4_02.mp3", title: "17 - Liberdade e Autonomia MQL5" },
-            { cat: "🎓 4. Venda de Mentoria", file: "audios/bloco4_03.mp3", title: "18 - Conteúdo do Curso Completo" },
-            { cat: "🎓 4. Venda de Mentoria", file: "audios/bloco4_04.mp3", title: "19 - Profissão Programador de Robôs" },
-            { cat: "🎓 4. Venda de Mentoria", file: "audios/bloco4_05.mp3", title: "20 - ÚLTIMAS VAGAS da Turma" },
+      currentAudio = new Audio(filePath);
+      button.innerText = '⏸️ Pausar';
+      card.classList.add('playing');
 
-            // BLOCO 5
-            { cat: "🛡️ 5. Risco e Gerenciamento", file: "audios/bloco5_01.mp3", title: "21 - Stop e Meta Diária Automáticos" },
-            { cat: "🛡️ 5. Risco e Gerenciamento", file: "audios/bloco5_02.mp3", title: "22 - Sem Ilusão de Ganho Fácil" },
-            { cat: "🛡️ 5. Risco e Gerenciamento", file: "audios/bloco5_03.mp3", title: "23 - Por que Robôs Erram Menos" },
-            { cat: "🛡️ 5. Risco e Gerenciamento", file: "audios/bloco5_04.mp3", title: "24 - Proteção Trailing Stop e Break-Even" },
-            { cat: "🛡️ 5. Risco e Gerenciamento", file: "audios/bloco5_05.mp3", title: "25 - Testando no Histórico (Backtest)" },
+      currentAudio.play().catch(err => {
+        alert("Erro ao tocar o áudio. Verifique se o arquivo existe na pasta 'audios/': " + filePath);
+        resetPlayUI();
+      });
 
-            // BLOCO 6
-            { cat: "💬 6. Atendimento / Dúvidas", file: "audios/bloco6_01.mp3", title: "26 - Chama no WhatsApp do Suporte" },
-            { cat: "💬 6. Atendimento / Dúvidas", file: "audios/bloco6_02.mp3", title: "27 - Funciona pelo Celular?" },
-            { cat: "💬 6. Atendimento / Dúvidas", file: "audios/bloco6_03.mp3", title: "28 - Dá pra Começar com Pouco Dinheiro?" },
-            { cat: "💬 6. Atendimento / Dúvidas", file: "audios/bloco6_04.mp3", title: "29 - Preciso Deixar o PC Ligado?" },
-            { cat: "💬 6. Atendimento / Dúvidas", file: "audios/bloco6_05.mp3", title: "30 - Qual a Margem Mínima Exigida?" },
-
-            // BLOCO 7
-            { cat: "🔥 7. Call to Action (Ação)", file: "audios/bloco7_01.mp3", title: "31 - Clica no Link da Bio Agora" },
-            { cat: "🔥 7. Call to Action (Ação)", file: "audios/bloco7_02.mp3", title: "32 - Siga o Perfil para Não Perder" },
-            { cat: "🔥 7. Call to Action (Ação)", file: "audios/bloco7_03.mp3", title: "33 - Últimos 10 Minutos do Desconto" },
-            { cat: "🔥 7. Call to Action (Ação)", file: "audios/bloco7_04.mp3", title: "34 - Garanta Seu Robô Antes que Feche" },
-            { cat: "🔥 7. Call to Action (Ação)", file: "audios/bloco7_05.mp3", title: "35 - Aponta a Câmera pro QR Code" },
-
-            // BLOCO 8
-            { cat: "⭐ 8. Provas Sociais", file: "audios/bloco8_01.mp3", title: "36 - Aluno Bateu Meta Hoje Cedo" },
-            { cat: "⭐ 8. Provas Sociais", file: "audios/bloco8_02.mp3", title: "37 - Relatório Mensal do Robô Positivo" },
-            { cat: "⭐ 8. Provas Sociais", file: "audios/bloco8_03.mp3", title: "38 - Zero Loss na Semana Passada" },
-            { cat: "⭐ 8. Provas Sociais", file: "audios/bloco8_04.mp3", title: "39 - Feedback dos Alunos da Mentoria" },
-            { cat: "⭐ 8. Provas Sociais", file: "audios/bloco8_05.mp3", title: "40 - Mais de 500 Robôs Rodando Hoje" }
-        ];
-
-        // RENDERIZAR INTERFACE
-        function renderInterface() {
-            const sfxDiv = document.getElementById('sfxContainer');
-            sfxData.forEach(sfx => {
-                const btn = document.createElement('button');
-                btn.className = 'btn-sfx';
-                btn.innerText = sfx.label;
-                btn.onclick = () => playAudio(sfx.file, sfx.label);
-                sfxDiv.appendChild(btn);
-            });
-
-            const catDiv = document.getElementById('categoriesContainer');
-            const categories = [...new Set(scriptsData.map(s => s.cat))];
-
-            categories.forEach(catName => {
-                const card = document.createElement('div');
-                card.className = 'category-card';
-                card.innerHTML = `<h3>${catName}</h3><div class="script-list"></div>`;
-                const list = card.querySelector('.script-list');
-
-                scriptsData.filter(s => s.cat === catName).forEach((script) => {
-                    const item = document.createElement('div');
-                    item.className = 'script-item';
-                    item.innerHTML = `
-                        <span class="script-title">${script.title}</span>
-                        <button class="btn-play" onclick="playMainScript('${script.file}', '${script.title}')">▶</button>
-                    `;
-                    list.appendChild(item);
-                });
-                catDiv.appendChild(card);
-            });
+      currentAudio.onended = () => {
+        resetPlayUI();
+        if (isAutomationRunning) {
+          handleNextAutoAudio();
         }
+      };
+    }
 
-        // REPRODUÇÃO DE SFX
-        function playAudio(filePath, title) {
-            let audioObj = new Audio(filePath);
-            activeAudios.push(audioObj);
-            audioObj.play().catch(e => console.log("Arquivo não encontrado: " + filePath));
-            
-            audioObj.onended = () => {
-                activeAudios = activeAudios.filter(a => a !== audioObj);
-            };
+    function playSFX(filePath, button) {
+      const sfx = new Audio(filePath);
+      button.classList.add('playing');
+      
+      sfx.play().catch(err => {
+        alert("Erro ao tocar o SFX. Verifique se o arquivo existe na pasta 'sfx/': " + filePath);
+      });
+
+      sfx.onended = () => {
+        button.classList.remove('playing');
+      };
+    }
+
+    function stopAllAudio(stopAuto = true) {
+      if (currentAudio) {
+        currentAudio.pause();
+        currentAudio = null;
+      }
+
+      if (countdownTimer) {
+        clearInterval(countdownTimer);
+        countdownTimer = null;
+      }
+
+      if (stopAuto) {
+        isAutomationRunning = false;
+        updateAutoStatus("Automação Parada", false);
+      }
+
+      resetPlayUI();
+    }
+
+    function resetPlayUI() {
+      document.querySelectorAll('.audio-card').forEach(card => card.classList.remove('playing'));
+      document.querySelectorAll('.play-btn').forEach(btn => btn.innerText = '▶️ Play');
+      document.querySelectorAll('.sfx-btn').forEach(btn => btn.classList.remove('playing'));
+    }
+
+    // LÓGICA DO MODO AUTOMÁTICO
+    function startAutomation() {
+      stopAllAudio(true);
+
+      const blockVal = document.getElementById('autoBlockSelect').value;
+      autoPlaylist = [];
+
+      if (blockVal === 'all') {
+        blocksData.forEach(b => b.audios.forEach(a => autoPlaylist.push(a)));
+      } else {
+        const targetBlock = blocksData.find(b => b.id == blockVal);
+        if (targetBlock) autoPlaylist = [...targetBlock.audios];
+      }
+
+      if (autoPlaylist.length === 0) return;
+
+      autoIndex = 0;
+      isAutomationRunning = true;
+      playAutoCurrent();
+    }
+
+    function playAutoCurrent() {
+      if (!isAutomationRunning || autoIndex >= autoPlaylist.length) {
+        updateAutoStatus("🎉 Automação Concluída!", false);
+        isAutomationRunning = false;
+        return;
+      }
+
+      const item = autoPlaylist[autoIndex];
+      const cardId = `card-${item.file.replace(/[/.]/g, '_')}`;
+      const cardElement = document.getElementById(cardId);
+      const playBtn = cardElement ? cardElement.querySelector('.play-btn') : null;
+
+      updateAutoStatus(`🟢 Tocando (${autoIndex + 1}/${autoPlaylist.length}): ${item.title}`, true);
+
+      if (playBtn) {
+        togglePlay(item.file, playBtn);
+      } else {
+        currentAudio = new Audio(item.file);
+        currentAudio.play();
+        currentAudio.onended = () => handleNextAutoAudio();
+      }
+    }
+
+    function handleNextAutoAudio() {
+      autoIndex++;
+
+      if (autoIndex >= autoPlaylist.length) {
+        updateAutoStatus("🎉 Bloco finalizado!", false);
+        isAutomationRunning = false;
+        return;
+      }
+
+      let intervalSec = parseInt(document.getElementById('autoInterval').value) || 30;
+      let remaining = intervalSec;
+
+      updateAutoStatus(`⏳ Aguardando ${remaining}s para o próximo áudio...`, true);
+
+      countdownTimer = setInterval(() => {
+        remaining--;
+        if (remaining > 0) {
+          updateAutoStatus(`⏳ Próximo áudio em ${remaining}s (${autoIndex + 1}/${autoPlaylist.length})...`, true);
+        } else {
+          clearInterval(countdownTimer);
+          countdownTimer = null;
+          playAutoCurrent();
         }
+      }, 1000);
+    }
 
-        // REPRODUÇÃO DE ÁUDIOS DOS BLOCOS
-        function playMainScript(filePath, title) {
-            if (mainVoiceAudio) {
-                mainVoiceAudio.pause();
-                mainVoiceAudio.currentTime = 0;
-            }
-            
-            document.getElementById('nowPlaying').innerText = title;
-            document.getElementById('statusText').innerText = "Reproduzindo...";
-            
-            mainVoiceAudio = new Audio(filePath);
-            activeAudios.push(mainVoiceAudio);
-            mainVoiceAudio.play().catch(e => alert("Áudio não encontrado na pasta: " + filePath));
+    function stopAutomation() {
+      stopAllAudio(true);
+      updateAutoStatus("⏹️ Automação Parada", false);
+    }
 
-            mainVoiceAudio.onended = () => {
-                document.getElementById('statusText').innerText = "Aguardando próxima ação";
-                document.getElementById('nowPlaying').innerText = "Nenhum";
-            };
-        }
+    function updateAutoStatus(text, isActive) {
+      const statusEl = document.getElementById('autoStatus');
+      statusEl.innerText = text;
+      statusEl.classList.toggle('active', isActive);
+    }
 
-        // BOTÃO DE PÂNICO
-        function stopAll() {
-            activeAudios.forEach(audio => {
-                audio.pause();
-                audio.currentTime = 0;
-            });
-            activeAudios = [];
-            document.getElementById('statusText').innerText = "Parado pelo usuário (Pânico)";
-            document.getElementById('nowPlaying').innerText = "Nenhum";
-        }
-
-        // MODO AUTOMÁTICO
-        let autoMode = false;
-        let autoIndex = 0;
-        let timerInterval = null;
-        let countdownSeconds = 0;
-
-        function toggleAutoMode() {
-            autoMode = !autoMode;
-            const btn = document.getElementById('btnAuto');
-            const status = document.getElementById('autoStatus');
-
-            if (autoMode) {
-                btn.classList.add('active');
-                status.innerText = "LIGADO";
-                startTimer();
-            } else {
-                btn.classList.remove('active');
-                status.innerText = "DESLIGADO";
-                clearInterval(timerInterval);
-                document.getElementById('timerDisplay').innerText = "--:--";
-            }
-        }
-
-        function startTimer() {
-            const inputMinutes = parseInt(document.getElementById('timerInput').value);
-            countdownSeconds = inputMinutes * 60; 
-            
-            clearInterval(timerInterval);
-
-            timerInterval = setInterval(() => {
-                countdownSeconds--;
-                
-                const min = Math.floor(countdownSeconds / 60).toString().padStart(2, '0');
-                const sec = (countdownSeconds % 60).toString().padStart(2, '0');
-                document.getElementById('timerDisplay').innerText = `${min}:${sec}`;
-
-                if (countdownSeconds <= 0) {
-                    playNextAutoScript();
-                    countdownSeconds = parseInt(document.getElementById('timerInput').value) * 60;
-                }
-            }, 1000);
-        }
-
-        function playNextAutoScript() {
-            const script = scriptsData[autoIndex];
-            playMainScript(script.file, script.title);
-            autoIndex = (autoIndex + 1) % scriptsData.length;
-        }
-
-        renderInterface();
-    </script>
+    window.onload = init;
+  </script>
 </body>
 </html>
