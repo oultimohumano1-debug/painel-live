@@ -14,6 +14,7 @@
       --danger-hover: #dc2626;
       --success: #22c55e;
       --warning: #f59e0b;
+      --meme: #d946ef; /* Cor roxa para diferenciar os memes */
       --text: #f8fafc;
       --text-muted: #94a3b8;
       --border: #334155;
@@ -45,6 +46,9 @@
       border: 1px solid var(--border);
       margin-bottom: 25px;
       box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      position: sticky;
+      top: 10px;
+      z-index: 100;
     }
 
     .title-area h1 {
@@ -285,8 +289,8 @@
       background: var(--danger);
     }
 
-    /* Seção SFX */
-    .sfx-section {
+    /* Seções Secundárias (SFX e Memes) */
+    .sfx-section, .memes-section {
       background: var(--card-bg);
       border: 1px solid var(--border);
       border-radius: 12px;
@@ -296,7 +300,16 @@
 
     .sfx-section h2 {
       font-size: 1.2rem;
-      color: #f59e0b;
+      color: var(--warning);
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .memes-section h2 {
+      font-size: 1.2rem;
+      color: var(--meme);
       margin-bottom: 15px;
       display: flex;
       align-items: center;
@@ -309,7 +322,7 @@
       gap: 10px;
     }
 
-    .sfx-btn {
+    .quick-btn {
       background: #334155;
       color: var(--text);
       border: 1px solid var(--border);
@@ -322,16 +335,16 @@
       transition: all 0.2s;
     }
 
-    .sfx-btn:hover {
+    .quick-btn:hover {
       background: #475569;
-      border-color: #f59e0b;
     }
 
-    .sfx-btn.playing {
-      background: #f59e0b;
-      color: #000;
-      font-weight: bold;
-    }
+    /* Cores ativas específicas */
+    .sfx-btn:hover { border-color: var(--warning); }
+    .sfx-btn.playing { background: var(--warning); color: #000; font-weight: bold; }
+
+    .meme-btn:hover { border-color: var(--meme); }
+    .meme-btn.playing { background: var(--meme); color: white; font-weight: bold; }
   </style>
 </head>
 <body>
@@ -340,17 +353,17 @@
   <header>
     <div class="title-area">
       <h1>🎙️ Mesa de Áudio - Live Stream</h1>
-      <p>Controle de locução e efeitos sonoros para transmissões ao vivo</p>
+      <p>Controle de locução, automação, efeitos e memes</p>
     </div>
     <button class="panic-btn" onclick="stopAllAudio()">
-      🚨 ZERAR ÁUDIO / PÂNICO
+      🚨 ZERAR ÁUDIOS / PÂNICO
     </button>
   </header>
 
   <!-- MODO AUTOMÁTICO (MODO CAFÉ / AUSÊNCIA) -->
   <div class="auto-panel">
     <div class="auto-title">
-      ☕ Modo Automação (Piloto Automático para Ausência)
+      ☕ Modo Automação (Piloto Automático)
     </div>
     <div class="auto-controls">
       <div class="control-group">
@@ -369,12 +382,12 @@
       </div>
 
       <div class="control-group">
-        <label for="autoInterval">Pausa entre áudios (segundos):</label>
+        <label for="autoInterval">Pausa (segundos):</label>
         <input type="number" id="autoInterval" value="30" min="5" max="600" style="width: 80px;">
       </div>
 
-      <button class="btn-start-auto" onclick="startAutomation()">▶️ Iniciar Automação</button>
-      <button class="btn-stop-auto" onclick="stopAutomation()">⏹️ Parar Automação</button>
+      <button class="btn-start-auto" onclick="startAutomation()">▶️ Iniciar</button>
+      <button class="btn-stop-auto" onclick="stopAutomation()">⏹️ Parar</button>
 
       <div class="auto-status" id="autoStatus">
         Automação Parada
@@ -385,22 +398,28 @@
   <!-- NAVEGAÇÃO DE TABS DOS BLOCOS -->
   <div class="tabs-container" id="tabsContainer"></div>
 
-  <!-- CONTEÚDO DOS BLOCOS -->
+  <!-- CONTEÚDO DOS BLOCOS PRINCIPAIS -->
   <div id="blocksContainer"></div>
+
+  <!-- MEMES EM ALTA -->
+  <div class="memes-section">
+    <h2>🤣 Memes em Alta</h2>
+    <div class="sfx-grid" id="memesGrid"></div>
+  </div>
 
   <!-- EFEITOS SONOROS (SFX) -->
   <div class="sfx-section">
-    <h2>🔔 Efeitos Sonoros Rápidos (SFX)</h2>
+    <h2>🔔 Efeitos Sonoros (SFX)</h2>
     <div class="sfx-grid" id="sfxGrid"></div>
   </div>
 
   <script>
-    // DADOS DOS BLOCOS E ÁUDIOS (FORMATO .WAV)
+    // ---------------------------------------------
+    // DADOS DOS BLOCOS E ÁUDIOS (WAV)
+    // ---------------------------------------------
     const blocksData = [
       {
-        id: 1,
-        title: "🎁 Bloco 1: Sorteio & Engajamento",
-        audios: [
+        id: 1, title: "🎁 Bloco 1: Sorteio & Engajamento", audios: [
           { file: "audios/bloco1_01.wav", title: "01. Sorteio Especial", desc: "Aviso de sorteio empolgado com risada" },
           { file: "audios/bloco1_02.wav", title: "02. Desafio de Likes", desc: "Chamada rápida para curtir a live" },
           { file: "audios/bloco1_03.wav", title: "03. Grupo VIP WhatsApp", desc: "Aviso em tom de segredo/sussurro" },
@@ -409,9 +428,7 @@
         ]
       },
       {
-        id: 2,
-        title: "🏛️ Bloco 2: Como Começar (MT5)",
-        audios: [
+        id: 2, title: "🏛️ Bloco 2: Como Começar (MT5)", audios: [
           { file: "audios/bloco2_01.wav", title: "01. MT5 é Simples", desc: "Explicando que o MetaTrader é fácil" },
           { file: "audios/bloco2_02.wav", title: "02. Regra nº 1: Simulado", desc: "Alerta de segurança para testar em demo" },
           { file: "audios/bloco2_03.wav", title: "03. Conta Gratuita", desc: "Abertura de conta rápida na corretora" },
@@ -420,9 +437,7 @@
         ]
       },
       {
-        id: 3,
-        title: "🤖 Bloco 3: Venda Robô Principal",
-        audios: [
+        id: 3, title: "🤖 Bloco 3: Venda Robô Principal", audios: [
           { file: "audios/bloco3_01.wav", title: "01. Plug and Play", desc: "Sem necessidade de programar" },
           { file: "audios/bloco3_02.wav", title: "02. Oferta Flash", desc: "Anúncio de desconto exclusivo na live" },
           { file: "audios/bloco3_03.wav", title: "03. Trailing Stop & Caixote", desc: "Explicação técnica de proteção" },
@@ -431,9 +446,7 @@
         ]
       },
       {
-        id: 4,
-        title: "🎓 Bloco 4: Venda de Mentoria",
-        audios: [
+        id: 4, title: "🎓 Bloco 4: Venda de Mentoria", audios: [
           { file: "audios/bloco4_01.wav", title: "01. Crie Seus Robôs", desc: "Provocação para aprender MQL5" },
           { file: "audios/bloco4_02.wav", title: "02. Liberdade MQL5", desc: "Visão de ter ideias rodando 24h" },
           { file: "audios/bloco4_03.wav", title: "03. Pega Pela Mão", desc: "Apresentação do curso completo" },
@@ -442,9 +455,7 @@
         ]
       },
       {
-        id: 5,
-        title: "🛡️ Bloco 5: Risco e Gerenciamento",
-        audios: [
+        id: 5, title: "🛡️ Bloco 5: Risco e Gerenciamento", audios: [
           { file: "audios/bloco5_01.wav", title: "01. Stop Loss & Meta", desc: "Proteção da conta e limites" },
           { file: "audios/bloco5_02.wav", title: "02. Sem Promessa Fácil", desc: "Alerta realista sobre o mercado" },
           { file: "audios/bloco5_03.wav", title: "03. Robô Sem Emoção", desc: "Vantagem da disciplina robótica" },
@@ -453,9 +464,7 @@
         ]
       },
       {
-        id: 6,
-        title: "💬 Bloco 6: Atendimento / Dúvidas",
-        audios: [
+        id: 6, title: "💬 Bloco 6: Atendimento / Dúvidas", audios: [
           { file: "audios/bloco6_01.wav", title: "01. Suporte no WhatsApp", desc: "Atendimento direto da equipe" },
           { file: "audios/bloco6_02.wav", title: "02. App no Celular", desc: "Acompanhamento em tempo real" },
           { file: "audios/bloco6_03.wav", title: "03. Capital Inicial", desc: "Dá para começar com pouco" },
@@ -464,9 +473,7 @@
         ]
       },
       {
-        id: 7,
-        title: "🔥 Bloco 7: Call to Action (Ação)",
-        audios: [
+        id: 7, title: "🔥 Bloco 7: Call to Action (Ação)", audios: [
           { file: "audios/bloco7_01.wav", title: "01. Link no Chat AGORA", desc: "Comando direto de clique" },
           { file: "audios/bloco7_02.wav", title: "02. Inscreva-se no Canal", desc: "Ativar o sininho do YouTube" },
           { file: "audios/bloco7_03.wav", title: "03. Faltam 10 Minutos", desc: "Contagem regressiva de oferta" },
@@ -475,9 +482,7 @@
         ]
       },
       {
-        id: 8,
-        title: "⭐ Bloco 8: Provas Sociais",
-        audios: [
+        id: 8, title: "⭐ Bloco 8: Provas Sociais", audios: [
           { file: "audios/bloco8_01.wav", title: "01. Meta em 15 Min", desc: "Aluno comemorando ganho" },
           { file: "audios/bloco8_02.wav", title: "02. 80% Taxa de Acerto", desc: "Relatório de performance" },
           { file: "audios/bloco8_03.wav", title: "03. Semana Zero Loss", desc: "Euforia de 100% de acerto" },
@@ -487,7 +492,62 @@
       }
     ];
 
+    // ---------------------------------------------
+    // DADOS DOS MEMES (MP3)
+    // ---------------------------------------------
+    const memesData = [
+      { file: "memes/aaaaaaaa-e-lutador.mp3", name: "Aaaaaaaa é Lutador" },
+      { file: "memes/are-you-crazy.mp3", name: "Are You Crazy" },
+      { file: "memes/a-risada-do-kiko.mp3", name: "Risada do Kiko" },
+      { file: "memes/baby-laughing-meme.mp3", name: "Baby Laughing" },
+      { file: "memes/bad-to-the-bone-meme.mp3", name: "Bad to the Bone" },
+      { file: "memes/bom-dia-a-todos-e-todes-meme.mp3", name: "Bom Dia a Todos" },
+      { file: "memes/bom-dia-hadouken.mp3", name: "Bom Dia Hadouken" },
+      { file: "memes/bom-dia-magnata.mp3", name: "Bom Dia Magnata" },
+      { file: "memes/brasil-sil-sil-rede-globo.mp3", name: "Brasil Sil Sil" },
+      { file: "memes/briga-de-gato.mp3", name: "Briga de Gato" },
+      { file: "memes/byd.mp3", name: "BYD" },
+      { file: "memes/chamando-todos-os-autobotss.mp3", name: "Autobots" },
+      { file: "memes/conceito-estrategia-meme.mp3", name: "Estratégia!" },
+      { file: "memes/corte-rapido.mp3", name: "Corte Rápido" },
+      { file: "memes/danger-alarm-sound-effect-meme.mp3", name: "Alarme de Perigo" },
+      { file: "memes/ele-nao-vai-nao.mp3", name: "Ele Não Vai Não" },
+      { file: "memes/e-o-pix-nada-ainda.mp3", name: "E o Pix Nada Ainda" },
+      { file: "memes/faaah.mp3", name: "Faaah!" },
+      { file: "memes/fazendinha-clipe-infantil-1.mp3", name: "Fazendinha" },
+      { file: "memes/foto.mp3", name: "Foto" },
+      { file: "memes/huh_.mp3", name: "Huh?" },
+      { file: "memes/la-ele.mp3", name: "Lá Ele" },
+      { file: "memes/meme-de-creditos-finales.mp3", name: "Créditos Finais" },
+      { file: "memes/metal-gear-alert.mp3", name: "Metal Gear Alert" },
+      { file: "memes/ny-video-online-audio-converter.mp3", name: "NY Video" },
+      { file: "memes/objetivoMM.mp3", name: "Objetivo MM" },
+      { file: "memes/oh-no-no-no-no-tik-tok.mp3", name: "Oh No No No" },
+      { file: "memes/oi-oi-oe remix.mp3", name: "Oi Oi Oe Remix" },
+      { file: "memes/positivo-meme.mp3", name: "Positivo" },
+      { file: "memes/punch_u4LmMsr.mp3", name: "Soco (Punch)" },
+      { file: "memes/que-isso-moreno.mp3", name: "Que Isso Moreno" },
+      { file: "memes/racionais-mcs-sou-voce-cutmp3.mp3", name: "Racionais" },
+      { file: "memes/rela-no-jacare.mp3", name: "Rela no Jacaré" },
+      { file: "memes/RIP.mp3", name: "RIP (Morte)" },
+      { file: "memes/rizzbot-laugh.mp3", name: "Rizzbot Laugh" },
+      { file: "memes/run.mp3", name: "Run!" },
+      { file: "memes/spiderman-meme-song.mp3", name: "Spiderman Song" },
+      { file: "memes/the-lion-sleeps-tonight.mp3", name: "Lion Sleeps" },
+      { file: "memes/tmpbxydyrz3.mp3", name: "Áudio Aleatório 1" },
+      { file: "memes/tmpd9mca4be.mp3", name: "Áudio Aleatório 2" },
+      { file: "memes/tome-rodrigo-faro_xDXKGwq.mp3", name: "Tome! (Faro)" },
+      { file: "memes/uepa-mp3cut.mp3", name: "Uepa! (Faro)" },
+      { file: "memes/ui-rodrigo-faro.mp3", name: "Ui! (Faro)" },
+      { file: "memes/voce-nao-tem-aura.mp3", name: "Você Não Tem Aura" },
+      { file: "memes/weeeee_original_1193597514938524841.mp3", name: "Weeeee!" },
+      { file: "memes/whatsapp-audio-2018-02-27-at-23.mp3", name: "Áudio WhatsApp" },
+      { file: "memes/wow_8.mp3", name: "Wow!" }
+    ];
+
+    // ---------------------------------------------
     // DADOS DOS EFEITOS SONOROS (SFX em .MP3)
+    // ---------------------------------------------
     const sfxData = [
       { file: "sfx/01_plim.mp3", name: "01. Plim" },
       { file: "sfx/02_moedas.mp3", name: "02. Moedas" },
@@ -511,7 +571,9 @@
       { file: "sfx/20_win.mp3", name: "20. Vitória" }
     ];
 
-    let currentAudio = null;
+    // Variáveis de controle de áudio
+    let currentMainAudio = null;
+    let activeQuickAudios = []; // Array para guardar SFXs e Memes tocando
     let autoPlaylist = [];
     let autoIndex = 0;
     let isAutomationRunning = false;
@@ -520,9 +582,10 @@
     function init() {
       const tabsContainer = document.getElementById('tabsContainer');
       const blocksContainer = document.getElementById('blocksContainer');
+      const memesGrid = document.getElementById('memesGrid');
       const sfxGrid = document.getElementById('sfxGrid');
 
-      // 1. Renderizar Tabs e Blocos
+      // 1. Renderizar Tabs e Blocos Principais
       blocksData.forEach((block, index) => {
         const tabBtn = document.createElement('button');
         tabBtn.className = `tab-btn ${index === 0 ? 'active' : ''}`;
@@ -548,7 +611,7 @@
               <div class="audio-title">${item.title}</div>
               <div class="audio-desc">${item.desc}</div>
             </div>
-            <button class="play-btn" onclick="togglePlay('${item.file}', this)">
+            <button class="play-btn" onclick="toggleMainPlay('${item.file}', this)">
               ▶️ Play
             </button>
           `;
@@ -559,12 +622,21 @@
         blocksContainer.appendChild(blockDiv);
       });
 
-      // 2. Renderizar SFX
+      // 2. Renderizar Memes em Alta
+      memesData.forEach(meme => {
+        const btn = document.createElement('button');
+        btn.className = 'quick-btn meme-btn';
+        btn.innerText = meme.name;
+        btn.onclick = () => playQuickAudio(meme.file, btn);
+        memesGrid.appendChild(btn);
+      });
+
+      // 3. Renderizar SFX
       sfxData.forEach(sfx => {
         const btn = document.createElement('button');
-        btn.className = 'sfx-btn';
+        btn.className = 'quick-btn sfx-btn';
         btn.innerText = sfx.name;
-        btn.onclick = () => playSFX(sfx.file, btn);
+        btn.onclick = () => playQuickAudio(sfx.file, btn);
         sfxGrid.appendChild(btn);
       });
     }
@@ -579,53 +651,68 @@
       });
     }
 
-    function togglePlay(filePath, button) {
+    function toggleMainPlay(filePath, button) {
       const card = button.closest('.audio-card');
 
-      if (currentAudio && currentAudio.src.endsWith(encodeURI(filePath)) && !currentAudio.paused) {
-        currentAudio.pause();
-        resetPlayUI();
+      if (currentMainAudio && currentMainAudio.src.endsWith(encodeURI(filePath)) && !currentMainAudio.paused) {
+        currentMainAudio.pause();
+        resetMainUI();
         return;
       }
 
-      stopAllAudio(false);
+      // Parar locução principal atual antes de iniciar nova
+      if (currentMainAudio) {
+        currentMainAudio.pause();
+        resetMainUI();
+      }
 
-      currentAudio = new Audio(filePath);
+      currentMainAudio = new Audio(filePath);
       button.innerText = '⏸️ Pausar';
       card.classList.add('playing');
 
-      currentAudio.play().catch(err => {
-        alert("Erro ao tocar o áudio. Verifique se o arquivo existe na pasta 'audios/': " + filePath);
-        resetPlayUI();
+      currentMainAudio.play().catch(err => {
+        alert("Erro ao tocar o áudio. Verifique a pasta 'audios/': " + filePath);
+        resetMainUI();
       });
 
-      currentAudio.onended = () => {
-        resetPlayUI();
+      currentMainAudio.onended = () => {
+        resetMainUI();
         if (isAutomationRunning) {
           handleNextAutoAudio();
         }
       };
     }
 
-    function playSFX(filePath, button) {
-      const sfx = new Audio(filePath);
+    function playQuickAudio(filePath, button) {
+      const quickAudio = new Audio(filePath);
+      activeQuickAudios.push(quickAudio); // Registra na lista de ativos (para o Pânico)
+      
       button.classList.add('playing');
       
-      sfx.play().catch(err => {
-        alert("Erro ao tocar o SFX. Verifique se o arquivo existe na pasta 'sfx/': " + filePath);
+      quickAudio.play().catch(err => {
+        alert("Erro ao tocar o áudio. Verifique se o arquivo existe: " + filePath);
+        button.classList.remove('playing');
       });
 
-      sfx.onended = () => {
+      quickAudio.onended = () => {
         button.classList.remove('playing');
+        // Remove da lista de ativos
+        activeQuickAudios = activeQuickAudios.filter(a => a !== quickAudio);
       };
     }
 
     function stopAllAudio(stopAuto = true) {
-      if (currentAudio) {
-        currentAudio.pause();
-        currentAudio = null;
+      // 1. Para áudio principal
+      if (currentMainAudio) {
+        currentMainAudio.pause();
+        currentMainAudio = null;
       }
 
+      // 2. Para TODOS os SFX e Memes rodando
+      activeQuickAudios.forEach(audio => audio.pause());
+      activeQuickAudios = []; // Limpa a lista
+
+      // 3. Para automação
       if (countdownTimer) {
         clearInterval(countdownTimer);
         countdownTimer = null;
@@ -636,16 +723,19 @@
         updateAutoStatus("Automação Parada", false);
       }
 
-      resetPlayUI();
+      // 4. Reseta a interface gráfica inteira
+      resetMainUI();
+      document.querySelectorAll('.quick-btn').forEach(btn => btn.classList.remove('playing'));
     }
 
-    function resetPlayUI() {
+    function resetMainUI() {
       document.querySelectorAll('.audio-card').forEach(card => card.classList.remove('playing'));
       document.querySelectorAll('.play-btn').forEach(btn => btn.innerText = '▶️ Play');
-      document.querySelectorAll('.sfx-btn').forEach(btn => btn.classList.remove('playing'));
     }
 
+    // ---------------------------------------------
     // LÓGICA DO MODO AUTOMÁTICO
+    // ---------------------------------------------
     function startAutomation() {
       stopAllAudio(true);
 
@@ -681,11 +771,11 @@
       updateAutoStatus(`🟢 Tocando (${autoIndex + 1}/${autoPlaylist.length}): ${item.title}`, true);
 
       if (playBtn) {
-        togglePlay(item.file, playBtn);
+        toggleMainPlay(item.file, playBtn);
       } else {
-        currentAudio = new Audio(item.file);
-        currentAudio.play();
-        currentAudio.onended = () => handleNextAutoAudio();
+        currentMainAudio = new Audio(item.file);
+        currentMainAudio.play();
+        currentMainAudio.onended = () => handleNextAutoAudio();
       }
     }
 
